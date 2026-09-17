@@ -31,6 +31,9 @@ jobs:
       - name: Train model
         run: python src/model_training.py
 
+      - name: Run model evaluation
+        run: python src/model_evaluation.py
+
       - name: Save trained model
         uses: actions/upload-artifact@v4
         with:
