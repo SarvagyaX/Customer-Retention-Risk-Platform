@@ -56,12 +56,12 @@ def train_model(X_train, y_train):
         )
     ])
 
-   model.fit(X_train, y_train)
+    model.fit(X_train, y_train)
 
-print("Model features:")
-print(list(X_train.columns))
+    print("Model features:")
+    print(list(X_train.columns))
 
-return model
+    return model
 
 
 def evaluate_model(model, X_test, y_test):
