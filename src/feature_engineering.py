@@ -39,12 +39,12 @@ def create_features(df):
         )
 
     # Complaint indicator
-    if "complaints" in df.columns:
-        df["has_complaint"] = (df["complaints"] > 0).astype(int)
+  if "complains" in df.columns:
+    df["has_complaint"] = (df["complains"] > 0).astype(int)
 
     # Call failure indicator
-    if "call_failure" in df.columns:
-        df["has_call_failures"] = (df["call_failure"] > 0).astype(int)
+   if "call_failure" in df.columns:
+    df["has_call_failures"] = (df["call_failure"] > 0).astype(int)
 
     # Customer activity score
     activity_columns = [
