@@ -37,6 +37,9 @@ jobs:
       - name: Run model evaluation
         run: python src/model_evaluation.py
 
+      - name: Test risk prediction
+        run: python src/risk_prediction.py
+
       - name: Commit trained model
         run: |
           git config user.name "github-actions[bot]"
