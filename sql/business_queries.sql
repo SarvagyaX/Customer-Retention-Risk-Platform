@@ -1,10 +1,3 @@
--- ============================================================
--- Customer Retention Risk Platform
--- Business Analytics Queries
--- ============================================================
-
-
--- 1. Overall customer and churn summary
 SELECT
     COUNT(*) AS total_customers,
     SUM(churn) AS churned_customers,
@@ -13,7 +6,6 @@ SELECT
 FROM customers;
 
 
--- 2. Churn rate by age group
 SELECT
     age_group,
     COUNT(*) AS total_customers,
@@ -24,7 +16,6 @@ GROUP BY age_group
 ORDER BY churn_rate_percent DESC;
 
 
--- 3. Churn rate by tariff plan
 SELECT
     tariff_plan,
     COUNT(*) AS total_customers,
@@ -35,7 +26,6 @@ GROUP BY tariff_plan
 ORDER BY churn_rate_percent DESC;
 
 
--- 4. Churn rate by subscription length
 SELECT
     subscription_length,
     COUNT(*) AS total_customers,
@@ -46,18 +36,16 @@ GROUP BY subscription_length
 ORDER BY subscription_length;
 
 
--- 5. Customers with complaints
 SELECT
-    complaints,
+    complains,
     COUNT(*) AS total_customers,
     SUM(churn) AS churned_customers,
     ROUND(AVG(churn) * 100, 2) AS churn_rate_percent
 FROM customers
-GROUP BY complaints
-ORDER BY complaints DESC;
+GROUP BY complains
+ORDER BY complains DESC;
 
 
--- 6. Customer value analysis
 SELECT
     CASE
         WHEN customer_value < 50 THEN 'Low Value'
@@ -69,18 +57,22 @@ SELECT
     ROUND(AVG(customer_value), 2) AS average_customer_value,
     ROUND(AVG(churn) * 100, 2) AS churn_rate_percent
 FROM customers
-GROUP BY customer_value_segment
+GROUP BY
+    CASE
+        WHEN customer_value < 50 THEN 'Low Value'
+        WHEN customer_value < 100 THEN 'Medium Value'
+        WHEN customer_value < 150 THEN 'High Value'
+        ELSE 'Very High Value'
+    END
 ORDER BY average_customer_value DESC;
 
 
--- 7. High-value customers who churned
 SELECT
-    customer_id,
     customer_value,
     subscription_length,
     frequency_of_use,
     frequency_of_sms,
-    complaints,
+    complains,
     churn
 FROM customers
 WHERE churn = 1
@@ -88,22 +80,19 @@ WHERE churn = 1
 ORDER BY customer_value DESC;
 
 
--- 8. Customers showing multiple warning signals
 SELECT
-    customer_id,
     customer_value,
-    complaints,
+    complains,
     call_failure,
     subscription_length,
     frequency_of_use,
     churn
 FROM customers
-WHERE complaints > 0
+WHERE complains > 0
   AND call_failure > 0
 ORDER BY customer_value DESC;
 
 
--- 9. Customer activity and churn
 SELECT
     CASE
         WHEN frequency_of_use < 20 THEN 'Low Activity'
@@ -113,14 +102,104 @@ SELECT
     COUNT(*) AS customers,
     ROUND(AVG(churn) * 100, 2) AS churn_rate_percent
 FROM customers
-GROUP BY activity_segment
+GROUP BY
+    CASE
+        WHEN frequency_of_use < 20 THEN 'Low Activity'
+        WHEN frequency_of_use < 50 THEN 'Medium Activity'
+        ELSE 'High Activity'
+    END
 ORDER BY churn_rate_percent DESC;
 
 
--- 10. Customer value at risk
 SELECT
     COUNT(*) AS churned_customers,
     ROUND(SUM(customer_value), 2) AS total_customer_value_at_risk,
     ROUND(AVG(customer_value), 2) AS average_value_of_churned_customers
 FROM customers
 WHERE churn = 1;
+
+
+SELECT
+    status,
+    COUNT(*) AS total_customers,
+    SUM(churn) AS churned_customers,
+    ROUND(AVG(churn) * 100, 2) AS churn_rate_percent
+FROM customers
+GROUP BY status
+ORDER BY churn_rate_percent DESC;
+
+
+SELECT
+    call_failure,
+    COUNT(*) AS total_customers,
+    SUM(churn) AS churned_customers,
+    ROUND(AVG(churn) * 100, 2) AS churn_rate_percent
+FROM customers
+GROUP BY call_failure
+ORDER BY churn_rate_percent DESC;
+
+
+SELECT
+    CASE
+        WHEN frequency_of_sms = 0 THEN 'No SMS Activity'
+        WHEN frequency_of_sms < 20 THEN 'Low SMS Activity'
+        WHEN frequency_of_sms < 50 THEN 'Medium SMS Activity'
+        ELSE 'High SMS Activity'
+    END AS sms_activity_segment,
+    COUNT(*) AS customers,
+    ROUND(AVG(churn) * 100, 2) AS churn_rate_percent
+FROM customers
+GROUP BY
+    CASE
+        WHEN frequency_of_sms = 0 THEN 'No SMS Activity'
+        WHEN frequency_of_sms < 20 THEN 'Low SMS Activity'
+        WHEN frequency_of_sms < 50 THEN 'Medium SMS Activity'
+        ELSE 'High SMS Activity'
+    END
+ORDER BY churn_rate_percent DESC;
+
+
+SELECT
+    customer_value,
+    subscription_length,
+    frequency_of_use,
+    frequency_of_sms,
+    complains,
+    call_failure,
+    churn
+FROM customers
+WHERE churn = 1
+  AND (
+      complains > 0
+      OR call_failure > 0
+  )
+ORDER BY customer_value DESC;
+
+
+SELECT
+    CASE
+        WHEN customer_value < 50 THEN 'Low Value'
+        WHEN customer_value < 100 THEN 'Medium Value'
+        WHEN customer_value < 150 THEN 'High Value'
+        ELSE 'Very High Value'
+    END AS customer_value_segment,
+    COUNT(*) AS customers,
+    ROUND(SUM(customer_value), 2) AS total_customer_value,
+    ROUND(
+        SUM(
+            CASE
+                WHEN churn = 1 THEN customer_value
+                ELSE 0
+            END
+        ),
+        2
+    ) AS customer_value_at_risk
+FROM customers
+GROUP BY
+    CASE
+        WHEN customer_value < 50 THEN 'Low Value'
+        WHEN customer_value < 100 THEN 'Medium Value'
+        WHEN customer_value < 150 THEN 'High Value'
+        ELSE 'Very High Value'
+    END
+ORDER BY customer_value_at_risk DESC;
