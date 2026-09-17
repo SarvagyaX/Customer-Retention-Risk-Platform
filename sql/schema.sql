@@ -1,12 +1,12 @@
 -- ============================================================
 -- Customer Retention Risk Platform
 -- Database Schema
+-- Source: UCI Iranian Churn Dataset
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS customers (
-    customer_id INTEGER PRIMARY KEY,
     call_failure INTEGER,
-    complaints INTEGER,
+    complains INTEGER,
     subscription_length INTEGER,
     charge_amount INTEGER,
     seconds_of_use INTEGER,
