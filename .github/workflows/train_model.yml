@@ -23,22 +23,34 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Run data cleaning
-        run: python src/data_cleaning.py
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u src/data_cleaning.py
 
       - name: Run feature engineering
-        run: python src/feature_engineering.py
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u src/feature_engineering.py
 
       - name: Train model
-        run: python src/model_training.py
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u src/model_training.py
 
       - name: Run model evaluation
-        run: python src/model_evaluation.py
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u src/model_evaluation.py
 
       - name: Test risk prediction
-        run: python src/risk_prediction.py
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u src/risk_prediction.py
 
       - name: Commit trained model
         run: |
@@ -47,9 +59,3 @@ jobs:
           git add models/churn_logistic_regression.joblib
           git commit -m "Update trained churn model" || exit 0
           git push
-
-      - name: Save trained model
-        uses: actions/upload-artifact@v4
-        with:
-          name: churn-model
-          path: models/churn_logistic_regression.joblib
