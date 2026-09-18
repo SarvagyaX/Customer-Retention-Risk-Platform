@@ -3,6 +3,8 @@ import pandas as pd
 import joblib
 from pathlib import Path
 
+from insights import get_retention_insights
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -31,14 +33,22 @@ model = load_model()
 
 
 st.title("Customer Retention Risk Platform")
+
 st.write(
     "Customer churn analytics, risk prediction, and retention insights."
 )
 
 
 total_customers = len(df)
-churned_customers = int(df["churn"].sum())
-churn_rate = df["churn"].mean() * 100
+
+churned_customers = int(
+    df["churn"].sum()
+)
+
+churn_rate = (
+    df["churn"].mean() * 100
+)
+
 value_at_risk = df.loc[
     df["churn"] == 1,
     "customer_value"
@@ -70,7 +80,20 @@ col4.metric(
 
 st.divider()
 
+
+st.subheader("Retention Insights")
+
+insights = get_retention_insights(df)
+
+for insight in insights:
+    st.write(f"• {insight}")
+
+
+st.divider()
+
+
 left, right = st.columns(2)
+
 
 with left:
     st.subheader("Churn by Tariff Plan")
@@ -98,11 +121,15 @@ with right:
 
 st.divider()
 
+
 st.subheader("Customer Risk Prediction")
+
 
 col1, col2, col3 = st.columns(3)
 
+
 with col1:
+
     call_failure = st.number_input(
         "Call Failures",
         min_value=0,
@@ -127,7 +154,9 @@ with col1:
         value=20
     )
 
+
 with col2:
+
     seconds_of_use = st.number_input(
         "Seconds of Use",
         min_value=0,
@@ -152,7 +181,9 @@ with col2:
         value=20
     )
 
+
 with col3:
+
     age_group = st.number_input(
         "Age Group",
         min_value=1,
