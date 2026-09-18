@@ -58,15 +58,23 @@ jobs:
           PYTHONUNBUFFERED: "1"
         run: python -u src/risk_prediction.py
 
+      - name: Test API import
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -c "from api.main import app; print('API import successful')"
+
       - name: Test API prediction
         env:
           PYTHONUNBUFFERED: "1"
         run: python -u api/test_api.py
 
-      - name: Commit trained model
+      - name: Commit generated project files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/customer_churn_processed.csv
+          git add data/customer_churn_features.csv
+          git add data/customer_retention.db
           git add models/churn_logistic_regression.joblib
-          git commit -m "Update trained churn model" || exit 0
+          git commit -m "Update generated project artifacts" || exit 0
           git push
