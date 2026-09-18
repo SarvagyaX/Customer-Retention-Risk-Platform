@@ -151,32 +151,6 @@ st.markdown(
         color: #dce9fa;
     }
 
-    .pipeline {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        padding: 1.5rem 0.5rem;
-    }
-
-    .pipeline-box {
-        background: linear-gradient(135deg,#102f55,#164a77);
-        border: 1px solid #2875a8;
-        border-radius: 14px;
-        padding: 1rem;
-        min-width: 145px;
-        text-align: center;
-        color: #eef7ff;
-        font-weight: 700;
-    }
-
-    .pipeline-arrow {
-        color: #32c9ff;
-        font-size: 1.5rem;
-        font-weight: 800;
-    }
-
     .risk-card {
         border-radius: 20px;
         padding: 1.5rem;
@@ -483,30 +457,6 @@ if page == "Overview":
             use_container_width=True,
             config={"displayModeBar": False}
         )
-
-    st.markdown(
-        '<div class="section-title">🔄 ML Risk Pipeline</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <div class="section-card">
-            <div class="pipeline">
-                <div class="pipeline-box">👤 Customer Data</div>
-                <div class="pipeline-arrow">→</div>
-                <div class="pipeline-box">🧹 Data Cleaning</div>
-                <div class="pipeline-arrow">→</div>
-                <div class="pipeline-box">⚙️ Feature Engineering</div>
-                <div class="pipeline-arrow">→</div>
-                <div class="pipeline-box">🤖 ML Model</div>
-                <div class="pipeline-arrow">→</div>
-                <div class="pipeline-box">🚦 Risk Level</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
 
 elif page == "Analytics":
