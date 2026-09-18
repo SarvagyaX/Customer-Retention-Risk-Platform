@@ -4,3 +4,4 @@ joblib
 matplotlib
 fastapi
 uvicorn
+requests
