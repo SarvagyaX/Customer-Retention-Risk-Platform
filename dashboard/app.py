@@ -1,12 +1,18 @@
+import sys
+from pathlib import Path
+
 import streamlit as st
 import pandas as pd
 import joblib
-from pathlib import Path
-
-from insights import get_retention_insights
-
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from insights import get_retention_insights
+from src.risk_prediction import predict_risk
+
 
 DATA_PATH = PROJECT_ROOT / "data" / "customer_churn_features.csv"
 MODEL_PATH = PROJECT_ROOT / "models" / "churn_logistic_regression.joblib"
@@ -232,8 +238,6 @@ if st.button("Predict Customer Risk"):
         "age": age,
         "customer_value": customer_value
     }
-
-    from src.risk_prediction import predict_risk
 
     result = predict_risk(customer)
 
