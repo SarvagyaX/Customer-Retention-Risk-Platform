@@ -7,30 +7,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = PROJECT_ROOT / "models" / "churn_logistic_regression.joblib"
 
 
-FEATURES = [
-    "call_failure",
-    "complains",
-    "subscription_length",
-    "charge_amount",
-    "seconds_of_use",
-    "frequency_of_use",
-    "frequency_of_sms",
-    "distinct_called_numbers",
-    "age_group",
-    "tariff_plan",
-    "status",
-    "age",
-    "customer_value",
-    "has_complaint",
-    "activity_score"
-]
-
-
 def load_model():
     return joblib.load(MODEL_PATH)
 
 
-def prepare_customer_data(customer):
+def prepare_customer_data(customer, model):
     df = pd.DataFrame([customer])
 
     if "complains" in df.columns:
@@ -38,23 +19,45 @@ def prepare_customer_data(customer):
             df["complains"] > 0
         ).astype(int)
 
-    activity_columns = [
-        "frequency_of_use",
-        "frequency_of_sms",
-        "distinct_called_numbers"
+    if all(
+        column in df.columns
+        for column in [
+            "frequency_of_use",
+            "frequency_of_sms",
+            "distinct_called_numbers"
+        ]
+    ):
+        df["activity_score"] = (
+            df["frequency_of_use"]
+            + df["frequency_of_sms"]
+            + df["distinct_called_numbers"]
+        )
+
+    required_features = list(
+        model.feature_names_in_
+    )
+
+    missing_features = [
+        column
+        for column in required_features
+        if column not in df.columns
     ]
 
-    df["activity_score"] = df[activity_columns].sum(axis=1)
+    if missing_features:
+        raise ValueError(
+            f"Missing features: {missing_features}"
+        )
 
-    df = df[FEATURES]
-
-    return df
+    return df[required_features]
 
 
 def predict_risk(customer):
     model = load_model()
 
-    customer_data = prepare_customer_data(customer)
+    customer_data = prepare_customer_data(
+        customer,
+        model
+    )
 
     probability = model.predict_proba(
         customer_data
