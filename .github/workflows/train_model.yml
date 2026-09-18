@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "src/**"
+      - "api/**"
       - "data/**"
       - "requirements.txt"
 
@@ -56,6 +57,11 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
         run: python -u src/risk_prediction.py
+
+      - name: Test API import
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -c "from api.main import app; print('API import successful')"
 
       - name: Commit trained model
         run: |
