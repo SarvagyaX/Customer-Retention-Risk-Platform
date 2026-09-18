@@ -47,6 +47,11 @@ jobs:
           PYTHONUNBUFFERED: "1"
         run: python -u src/model_evaluation.py
 
+      - name: Run SQL analysis
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python -u src/sql_analysis.py
+
       - name: Test risk prediction
         env:
           PYTHONUNBUFFERED: "1"
