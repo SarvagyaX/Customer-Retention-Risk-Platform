@@ -14,24 +14,64 @@ def load_model():
 def prepare_customer_data(customer, model):
     df = pd.DataFrame([customer])
 
+    numeric_columns = [
+        "seconds_of_use",
+        "frequency_of_use",
+        "frequency_of_sms",
+        "call_failure",
+        "subscription_length",
+        "complains",
+        "distinct_called_numbers"
+    ]
+
+    for column in numeric_columns:
+        if column in df.columns:
+            df[column] = pd.to_numeric(
+                df[column],
+                errors="coerce"
+            )
+
+    if "seconds_of_use" in df.columns and "subscription_length" in df.columns:
+        df["avg_usage_per_month"] = (
+            df["seconds_of_use"] /
+            df["subscription_length"].replace(0, 1)
+        )
+
+    if "frequency_of_use" in df.columns and "subscription_length" in df.columns:
+        df["monthly_call_frequency"] = (
+            df["frequency_of_use"] /
+            df["subscription_length"].replace(0, 1)
+        )
+
+    if "frequency_of_sms" in df.columns and "subscription_length" in df.columns:
+        df["monthly_sms_frequency"] = (
+            df["frequency_of_sms"] /
+            df["subscription_length"].replace(0, 1)
+        )
+
     if "complains" in df.columns:
         df["has_complaint"] = (
             df["complains"] > 0
         ).astype(int)
 
+    if "call_failure" in df.columns:
+        df["has_call_failures"] = (
+            df["call_failure"] > 0
+        ).astype(int)
+
+    activity_columns = [
+        "frequency_of_use",
+        "frequency_of_sms",
+        "distinct_called_numbers"
+    ]
+
     if all(
         column in df.columns
-        for column in [
-            "frequency_of_use",
-            "frequency_of_sms",
-            "distinct_called_numbers"
-        ]
+        for column in activity_columns
     ):
-        df["activity_score"] = (
-            df["frequency_of_use"]
-            + df["frequency_of_sms"]
-            + df["distinct_called_numbers"]
-        )
+        df["activity_score"] = df[
+            activity_columns
+        ].sum(axis=1)
 
     required_features = list(
         model.feature_names_in_
