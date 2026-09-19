@@ -1,4 +1,6 @@
-# Customer Retention Risk Platform
+# Customer Retention Risk Platform 
+
+[![Train Churn Model](https://github.com/SarvagyaX/Customer-Retention-Risk-Platform/actions/workflows/train_model.yml/badge.svg)](https://github.com/SarvagyaX/Customer-Retention-Risk-Platform/actions/workflows/train_model.yml)
 
 An end-to-end customer churn analytics and retention risk platform built with Python, SQL, Machine Learning, FastAPI, Streamlit, Plotly, and GitHub Actions.
 
